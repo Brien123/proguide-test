@@ -1,0 +1,49 @@
+.SelectBox {
+    background-color: transparent;
+    border-radius: 4px;
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+
+  .options {
+    width: 100px;
+    height: 140px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid black;
+    cursor: pointer;
+    background-color: #EDEDED;
+    font-size: 1rem;
+  
+  }
+  
+  .options:active {
+    border: 7px solid #FF6B35;
+  
+  }
+  
+  .radioToolbar{
+    display: flex;
+    justify-content: space-evenly;    
+  }
+  
+  .radioToolbar input[type="radio"] {
+    opacity: 0;
+  }
+  
+  .radioToolbar label {
+    border: 2px solid #EDEDED;
+    border-radius: 4px;
+  
+  }
+  
+  .radioToolbar label:hover {
+    border-color: #2e2d2d8e;
+    background-color: #EDEDED;
+  
+  }
+  
+  .radioToolbar input[type="radio"]:checked+label {
+    background-color: #EDEDED;
+    border-color: #FF6B35;
+  }

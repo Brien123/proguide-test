@@ -1,0 +1,14 @@
+
+  
+
+  .blob{
+    background-image: url(../images/circle.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+  }
+
+  .bottomBold{
+    border-bottom: 2px solid #0d6efd;
+    height: 5px;
+  }
