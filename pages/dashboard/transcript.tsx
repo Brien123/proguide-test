@@ -111,6 +111,11 @@ const Transcript = () => {
   });
 
   let formerCharge = 0;
+
+  const verifyPhoneNumber= (e: React.FocusEvent<HTMLInputElement>)=>{
+
+    String(number).length<9?alert('Your Phone Number is too short. Please correct that'):updateNum(number)
+  }
   const setPrice = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateMode(e.currentTarget.value);
 
@@ -213,6 +218,7 @@ const Transcript = () => {
         type: "save&add",
       };
     }
+
     AxiosGetData(baseURL + "transcript.php", "post", formValues)
       .then((res) => {
         console.log(res.data);
@@ -228,6 +234,7 @@ const Transcript = () => {
       })*/
         } else {
           alert("Submission Failed. Please Contact Admin");
+          //updateonSubmitForm(false);
         }
 
         //found record. fill fields
@@ -236,7 +243,6 @@ const Transcript = () => {
       .catch((e) => {
         alert("An Error Occured");
         updateonSubmitForm(false);
-
         console.log(e);
       });
   };
@@ -594,16 +600,23 @@ I to argue when he says so
                     updateDept(e.currentTarget.value);
                   }}
                 />
-
-                <InputTextField
-                  labelName="Your Phone Number"
-                  typeName="number"
-                  iconType=""
-                  inputVal={number}
-                  onChangeFxn={(e) => {
-                    updateNum(parseInt(e.currentTarget.value));
-                  }}
-                />
+                 <label htmlFor="basic-url" className="form-label">
+              Phone Number
+            </label>
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                onBlur={verifyPhoneNumber}
+                onChange={(event) => updateNum(parseInt(event.currentTarget.value))}
+                placeholder="Please Enter Your Phone Number"
+                aria-label="Phone"
+                aria-describedby="addon-wrapping"
+                style={{ height: "50px" }}
+                required
+              />
+            </div>
+                
 
                 {!serverResponse.success ? (
                   <div className="input-group shadow-sm p-2">
