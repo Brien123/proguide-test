@@ -1,0 +1,25 @@
+<Container style={{height: '50px'}}>
+        <Navbar bg="primary" expand="lg"  fixed="top" >
+        <Container fluid>
+          <Navbar.Brand href="#home" className={` fs-1 ${Styles.mainFont}`}>{name}</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav orangedefault" />
+          <Navbar.Collapse id="basic-navbar-nav orangedefault">
+            <Container>
+            <Nav className={`container  d-flex justify-content-end  ${Styles.nav}`}>
+              <Nav.Link href="#" className={Styles.navItem}>Home</Nav.Link>
+              <Nav.Link href="#link" className={Styles.navItem}>About Us</Nav.Link>
+              <Nav.Link href="#link" className={Styles.navItem}>Services</Nav.Link>
+              <Nav.Link href="#link" className={Styles.navItem}>Testimonies</Nav.Link>
+              <Nav.Link href="#link" className={Styles.navItem}>Contact Us</Nav.Link>
+              <Nav.Link href="#link" >
+                <button className={` btn ${Styles.primarybtnoutline} ${Styles.nav}`}>Login</button>
+              </Nav.Link>
+              <Nav.Link href="#link" >
+                <button className={` btn ${Styles.primarybtn} ${Styles.nav}`}>Sign Up</button>
+              </Nav.Link>
+            </Nav>
+            </Container>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      </Container>
