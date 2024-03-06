@@ -68,7 +68,7 @@ def paraphrase_question():
 # route for answering new questions from old
 @app.route('/answer', methods=['POST'])
 def answers():
-        """
+    """
     Example question: {
     "question": "A boy walks a distance of 5 km in 100 minutes, what is his speed. what is the difference between speed and velocity"
     }
