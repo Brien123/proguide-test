@@ -12,7 +12,7 @@ from functions.function import score, replace_numbers_with_random, generate_modi
 
 app = Flask(__name__)
 
-# Endpoint to receive POST requests containing data
+# route to receive requests containing data and calculate proguide score
 @app.route('/calculate_score', methods=['POST'])
 def calculate_score():
     """
@@ -25,7 +25,6 @@ Example df: {
 }
 """
     try:
-        # Get the JSON data from the POST request
         data = request.get_json()
         df = pd.DataFrame(data)
         
@@ -101,7 +100,6 @@ def similarity():
     ]
 }
     """
-    # Receive questions from the request
     questions = request.json.get('questions', [])
 
     if len(questions) < 2:
@@ -110,7 +108,7 @@ def similarity():
     # Calculate similarity
     similarity = calculate_similarity(questions)
 
-    # Construct response
+    # response
     response = []
     for i in range(len(questions)):
         for j in range(i + 1, len(questions)):
