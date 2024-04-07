@@ -115,7 +115,7 @@ def similarity():
             response.append({
                 'question1': questions[i],
                 'question2': questions[j],
-                'similarity_percentage': similarity[i][j]
+                'percentage similarity': similarity[i][j]
             })
 
     return jsonify(response), 200       
