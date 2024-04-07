@@ -6,6 +6,9 @@ from IPython.display import Markdown
 import re
 import random
 import json
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import normalize
 
 GOOGLE_API_KEY= "AIzaSyBgc-O6x9qII5OpTGIyxYrHyICAdRj-Pe0"
 genai.configure(api_key = GOOGLE_API_KEY)
@@ -112,3 +115,22 @@ def answer_questions(question):
     response = model.generate_content(prefix + question)
 
     return response.text
+
+# Function to calculate similarity between questions
+def calculate_similarity(questions):
+    """
+    Calculates the cosine similarity between pairs of questions.
+
+    Parameters:
+      questions (list): A list of strings representing the questions to compare.
+
+    Returns:
+      similarity (numpy.ndarray): A 2D numpy array containing the similarity percentages
+                                  between pairs of questions.
+    """
+    
+    questions_df = pd.DataFrame(questions, columns=["questions"])
+    vectorizer = TfidfVectorizer()
+    questions_tfidf = vectorizer.fit_transform(questions_df["questions"])
+    similarity = cosine_similarity(questions_tfidf) * 100
+    return similarity
