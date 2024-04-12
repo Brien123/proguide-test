@@ -6,7 +6,7 @@ from IPython.display import Markdown
 import re
 import random
 import json
-from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity
+from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency
 #import seaborn as sns
 #import matplotlib.pyplot as plt
 
@@ -118,7 +118,15 @@ def similarity():
                 'percentage similarity': similarity[i][j]
             })
 
-    return jsonify(response), 200       
+    return jsonify(response), 200     
+
+
+# route to get topic frequency per year
+@app.route('/frequency', methods=['GET'])
+def freq():
+    table = request.get_json().get("table")
+    tabs = frequency(table)
+    return tabs
 
 if __name__ == '__main__':
     app.run(debug=True)

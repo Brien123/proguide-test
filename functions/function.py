@@ -1,4 +1,3 @@
-from flask import Flask, jsonify, request
 import pandas as pd
 import os
 import google.generativeai as genai
@@ -9,6 +8,8 @@ import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
+from dotenv import load_dotenv
+import mysql.connector
 
 GOOGLE_API_KEY= "AIzaSyBgc-O6x9qII5OpTGIyxYrHyICAdRj-Pe0"
 genai.configure(api_key = GOOGLE_API_KEY)
@@ -134,3 +135,55 @@ def calculate_similarity(questions):
     questions_tfidf = vectorizer.fit_transform(questions_df["questions"])
     similarity = cosine_similarity(questions_tfidf) * 100
     return similarity
+
+def fetch_data_from_mysql(table):
+    """
+    Function to fetch data from MySQL database.
+
+    Parameters:
+        table (str): Name of the table to fetch data from.
+
+    Returns:
+        pandas.DataFrame: DataFrame containing the fetched data.
+    """
+    # Connect to MySQL database
+    connection = mysql.connector.connect(
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_NAME')
+    )
+
+    # Execute a MySQL query to fetch data
+    query = f"SELECT * FROM ProGuide.{table}"
+    cursor = connection.cursor()
+    cursor.execute(query)
+
+    # Fetch all rows from the result set
+    data = cursor.fetchall()
+
+    # Close the cursor and connection
+    cursor.close()
+    connection.close()
+
+    # Convert the data to a DataFrame
+    result = pd.DataFrame(data, columns=cursor.column_names)
+
+    return result
+
+
+def frequency(table):
+    """
+    Function to get the frequency of each unique topic per year.
+
+    Parameters:
+        dataframe (pandas.DataFrame): DataFrame containing columns 'id', 'question', 'topic', and 'year'.
+
+    Returns:
+        pandas.DataFrame: DataFrame containing the frequency of each unique topic per year.
+    """
+    questions = fetch_data_from_mysql(table)
+    frequency_df = questions.groupby(['year', 'Topic']).size().unstack(fill_value=0)
+    frequency_json = frequency_df.to_json(orient='index')
+    
+    return frequency_json
