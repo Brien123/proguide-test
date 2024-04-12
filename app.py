@@ -122,11 +122,20 @@ def similarity():
 
 
 # route to get topic frequency per year
-@app.route('/frequency', methods=['GET'])
+@app.route('/frequency', methods=['POST'])
 def freq():
-    table = request.get_json().get("table")
-    tabs = frequency(table)
-    return tabs
+    # Get the table name from the request JSON
+    table = request.json.get("table")
+    
+    # Fetch the frequency data
+    try:
+        table = request.get_json().get("table")
+        tabs = frequency(table)
+        return tabs
+        
+    except Exception as e:
+        error_message = f"Error fetching frequency data: {str(e)}"
+        return jsonify({"error": error_message}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
