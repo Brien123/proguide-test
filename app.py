@@ -6,7 +6,7 @@ from IPython.display import Markdown
 import re
 import random
 import json
-from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency
+from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency, get_topic_similarity
 #import seaborn as sns
 #import matplotlib.pyplot as plt
 
@@ -87,38 +87,31 @@ def answers():
 
 # route to receive questions and return similarities
 @app.route('/calculate_similarity', methods=['POST'])
-def similarity():
-
-    """
-    Example data: 
-    {
-    "questions": [
-        "What is machine learning?",
-        "Tell me about machine learning",
-        "What is artificial intelligence?",
-        "Explain AI to me"
-    ]
-}
-    """
-    questions = request.json.get('questions', [])
-
+def get_similarity():
+    data = request.get_json()
+    
+    if 'questions' not in data:
+        return jsonify({'error': 'Questions are required!'}), 400
+    
+    questions = data['questions']
+    
     if len(questions) < 2:
-        return jsonify({'error': 'At least two questions are required'}), 400
-
-    # Calculate similarity
-    similarity = calculate_similarity(questions)
-
-    # response
-    response = []
+        return jsonify({'error': 'At least two questions are required!'}), 400
+    
+    similarity_matrix = calculate_similarity(questions)
+    
+    results = []
+    
     for i in range(len(questions)):
-        for j in range(i + 1, len(questions)):
-            response.append({
-                'question1': questions[i],
-                'question2': questions[j],
-                'percentage similarity': similarity[i][j]
-            })
-
-    return jsonify(response), 200     
+        for j in range(i+1, len(questions)):
+            pair = {
+                'question_1': questions[i],
+                'question_2': questions[j],
+                'similarity_score': similarity_matrix[i][j]
+            }
+            results.append(pair)
+    
+    return jsonify({'results': results})
 
 
 # route to get topic frequency per year
@@ -136,6 +129,26 @@ def freq():
     except Exception as e:
         error_message = f"Error fetching frequency data: {str(e)}"
         return jsonify({"error": error_message}), 500
+
+
+@app.route('/topic_similarity', methods=['POST'])
+def topic_similarity():
+    """
+    {
+    "table": "Physics",
+    "topic": "Motion"
+    }"""
+    data = request.get_json()
+    
+    if 'topic' not in data or 'table' not in data:
+        return jsonify({'error': 'Topic and table are required!'}), 400
+    
+    topic = data['topic']
+    table = data['table']
+    
+    results = get_topic_similarity(topic, table)
+    
+    return jsonify({'results': results})
 
 if __name__ == '__main__':
     app.run(debug=True)

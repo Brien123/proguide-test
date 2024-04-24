@@ -129,7 +129,7 @@ def calculate_similarity(questions):
       similarity (numpy.ndarray): A 2D numpy array containing the similarity percentages
                                   between pairs of questions.
     """
-    
+    #questions_df = question
     questions_df = pd.DataFrame(questions, columns=["questions"])
     vectorizer = TfidfVectorizer()
     questions_tfidf = vectorizer.fit_transform(questions_df["questions"])
@@ -187,3 +187,27 @@ def frequency(table):
     frequency_json = frequency_df.to_json(orient='index')
     
     return frequency_json
+
+
+def get_topic_similarity(topic, table):
+    questions_df = fetch_data_from_mysql(table)
+    questions_df = questions_df[questions_df['Topic'] == topic]
+    questions = questions_df['Questions'].tolist()
+    question_ids = questions_df['ID'].tolist()
+    
+    similarity_matrix = calculate_similarity(questions)
+    
+    results = []
+    
+    for i in range(len(questions)):
+        for j in range(i+1, len(questions)):
+            pair = {
+                'question_id_1': question_ids[i],
+                'question_id_2': question_ids[j],
+                'question_1': questions[i],
+                'question_2': questions[j],
+                'similarity_score': similarity_matrix[i][j]
+            }
+            results.append(pair)
+    
+    return results
