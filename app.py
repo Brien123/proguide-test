@@ -11,7 +11,7 @@ from functions.function import score, replace_numbers_with_random, generate_modi
 #import matplotlib.pyplot as plt
 
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = b'_5#y2L"F4Q8z\n\xfc]/'
 
 @app.route('/')
 def index():
