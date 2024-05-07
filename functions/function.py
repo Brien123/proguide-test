@@ -10,9 +10,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
 from dotenv import load_dotenv
 import mysql.connector
+from flask import session
 
-GOOGLE_API_KEY= "AIzaSyBgc-O6x9qII5OpTGIyxYrHyICAdRj-Pe0"
-genai.configure(api_key = GOOGLE_API_KEY)
+def to_markdown(text):
+  text = text.replace('•', '  *')
+  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+
+api_key = os.environ.get("GOOGLE_API_KEY")
+
 
 def score(df):
     """
@@ -85,8 +90,6 @@ def generate_modified_content(question, percentage_range=25):
     Returns:
         str: Generated question
     """
-
-    GOOGLE_API_KEY= "AIzaSyBgc-O6x9qII5OpTGIyxYrHyICAdRj-Pe0" #API key i got from google developer site. it needs to be kept in a .env file. This will be done in further updates
     
     # Calling the replace_numbers_with_random function to modify numerical values in the question
     modified_question = replace_numbers_with_random(question, percentage_range)
@@ -211,3 +214,35 @@ def get_topic_similarity(topic, table):
             results.append(pair)
     
     return results
+
+
+# def chat(model_name, user_input):
+#     model = genai.GenerativeModel(model_name)
+#     chat = model.start_chat(history=[])
+#     chat.history
+#     response = chat.send_message(user_input, stream=True)
+#     response_text = ''.join([chunk.text for chunk in response])
+#     return response_text
+
+
+def chat(user_input):
+    # Initialize the GenerativeModel with the provided model_name
+    model = genai.GenerativeModel('gemini-pro')
+    
+    # Retrieve the conversation history from the session or initialize it
+    messages = session.get('messages', [])
+    
+    # Append the user's input to the conversation history
+    messages.append({'role': 'user', 'parts': [user_input]})
+    
+    # Generate content based on the messages
+    response = model.generate_content(messages)
+    
+    # Append the model's response to the conversation history
+    messages.append({'role': 'model', 'parts': [response.text]})
+    
+    # Store the updated conversation history in the session
+    session['messages'] = messages
+    
+    return response.text
+

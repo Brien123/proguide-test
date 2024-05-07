@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, session
 import pandas as pd
 import os
 import google.generativeai as genai
@@ -6,11 +6,16 @@ from IPython.display import Markdown
 import re
 import random
 import json
-from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency, get_topic_similarity
+from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency, get_topic_similarity, chat
 #import seaborn as sns
 #import matplotlib.pyplot as plt
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 # route to receive requests containing data and calculate proguide score
 @app.route('/calculate_score', methods=['POST'])
@@ -149,6 +154,36 @@ def topic_similarity():
     results = get_topic_similarity(topic, table)
     
     return jsonify({'results': results})
+
+
+@app.route('/chat', methods=['POST'])
+def api_chat():
+    #data = request.get_json()
+    user_input = request.json.get('message')
+    
+    response_text = chat(user_input)
+    
+    return jsonify({'response': response_text})
+
+# @app.route('/speak', methods=['POST'])
+# # {"message": "what is a computer"}
+
+# # def chat_route():
+# #     # Get user input from the request
+# #     user_input = request.json.get('message')
+    
+# #     # Call the chat function
+# #     model_name = 'gemini-pro'  # model name
+# #     response_text = chat(model_name, user_input)
+    
+# #     # Return the response as JSON
+# #     return jsonify({'response': response_text})
+
+@app.route('/clear_session')
+def clear_session():
+    # Clear the session data
+    session.clear()
+    return 'Session cleared successfully'
 
 if __name__ == '__main__':
     app.run(debug=True)
