@@ -6,12 +6,18 @@ from IPython.display import Markdown
 import re
 import random
 import json
-from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency, get_topic_similarity, chat
-#import seaborn as sns
-#import matplotlib.pyplot as plt
+from functions.function import score, replace_numbers_with_random, generate_modified_content, answer_questions, calculate_similarity, fetch_data_from_mysql, frequency, get_topic_similarity, chat, to_markdown, chats
+import secrets
+from flask_session import Session
 
+# app = Flask(__name__)
+#app.secret_key = b'_5#y2L"F4Q8z\n\xfc]/'
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xfc]/'
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
+app.secret_key = secrets.token_hex(16)
 
 @app.route('/')
 def index():
@@ -158,32 +164,30 @@ def topic_similarity():
 
 @app.route('/chat', methods=['POST'])
 def api_chat():
-    #data = request.get_json()
     user_input = request.json.get('message')
     
     response_text = chat(user_input)
+    #markdown_response = to_markdown(response_text)  # Convert the response text to Markdown
     
     return jsonify({'response': response_text})
 
-# @app.route('/speak', methods=['POST'])
-# # {"message": "what is a computer"}
-
-# # def chat_route():
-# #     # Get user input from the request
-# #     user_input = request.json.get('message')
-    
-# #     # Call the chat function
-# #     model_name = 'gemini-pro'  # model name
-# #     response_text = chat(model_name, user_input)
-    
-# #     # Return the response as JSON
-# #     return jsonify({'response': response_text})
 
 @app.route('/clear_session')
 def clear_session():
     # Clear the session data
     session.clear()
     return 'Session cleared successfully'
+
+
+@app.route('/chats', methods=['POST'])
+def api_chats():
+    """
+    Flask route for handling chat requests.
+    """
+    user_question = request.json.get('message')
+    response = chats(user_question)
+    
+    return jsonify({'response': response})
 
 if __name__ == '__main__':
     app.run(debug=True)
